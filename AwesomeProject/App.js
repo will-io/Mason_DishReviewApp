@@ -1,45 +1,98 @@
 //need to npm install react-naviation drawer and react naviagtion
 import React, {Component} from 'react';
-import { StyleSheet, Image, View, Text } from 'react-native';
+import { StyleSheet, Image, View, Text, YellowBox } from 'react-native';
+import {Icon} from 'react-native-elements';
 import { createDrawerNavigator, DrawerNavigatorItems} from 'react-navigation-drawer';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
+import { Provider as PaperProvider } from 'react-native-paper';
+
 import * as firebase from 'firebase';
 import ApiKeys from './constants/ApiKeys'
 
+import SignInScreen from './SignInScreen'
 import HomeScreen from './HomeScreen'
 import DishInfoScreen from './DishInfoScreen'
-//import StatusOSbar from './components/statusBar'
-//import CustomText from './components/customText'
-//import {scale} from './components/scaling'
-import {StatusOSbar, CustomText, scale, Images} from './components'
+import StatusOSbar from './components/statusBar'
+import CustomText from './components/customText'
+import {scale} from './components/scaling'
 
-//import Images from './components/images'
+import _ from 'lodash';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const userData = require('./data/user_info.json');
+YellowBox.ignoreWarnings(['Setting a timer']);
+const _console = _.clone(console);
+console.warn = message => {
+  if (message.indexOf('Setting a timer') <= -1) {
+    _console.warn(message);
+  }
+};
+
 
 class App extends Component {  
   constructor(props){
     super(props);
     this.state = {
-      isLoadingComplete: false
+      loading: true,
+      authenticated: false,
+      signedIn: false,
+      name: "",
+      first_name: "fahad",
+      last_name: "",
+			photoUrl: "",
+			email: ''
     }
 
     if (!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
-  }
+	}
 
-  render() {
+	componentDidMount = () => {
+	}
+
+	updateState = (first_name, last_name, email, photoUrl) => {
+		this.setState({
+			first_name: first_name,
+			last_name: last_name,
+			email: email,
+			photoUrl: photoUrl
+    })
+	}
+  
+  render(){
     return (
-
-      <MyApp />
-    );
+			<PaperProvider>
+      <MyApp 
+        screenProps={{
+          first_name:this.state.first_name, 
+          last_name: this.state.last_name, 
+					photoUrl: this.state.photoUrl,
+					email: this.state.email,
+					updateState: this.updateState
+				}}
+      />
+			</PaperProvider>
+    )
   }
+  /*
+  render() {
+    //if (this.state.loading) return null;
+    return (
+      <View style={{flex:1}}>
+        {this.state.signedIn ? (
+          <MyApp name={this.state.first_name} photoUrl={this.state.photoUrl} />
+        ) : (
+          <LoginPage signIn={this.signIn} />
+        )}
+      </View>
+    );
+  }*/
 }
 
 export default App;
 
-const SlidePanel = props => {
-  state = userData;
+
+const SlidePanel = (props) => {
+	//state = userData;
 
   return(
     <View style={styles.drawerPanel}>
@@ -50,19 +103,34 @@ const SlidePanel = props => {
         <View style={styles.profileInfo}>
           <Image 
             style={styles.profileIcon}
-            source={Images.profile_image}
+            source={{uri: props.screenProps.photoUrl}}
           />
           <View style={styles.profileText}>
             <CustomText fontFamily='Raleway' fontWeight='Bold' style={styles.text1}>
-              {state.first_name} {state.last_name}
+              {props.screenProps.first_name} {props.screenProps.last_name}
             </CustomText>
-            <CustomText fontFamily='Roboto' fontWeight='Bold' style={styles.text2}>{state.email}</CustomText>
+            <CustomText fontFamily='Roboto' fontWeight='Bold' style={styles.text2}>{props.screenProps.email}</CustomText>
           </View>
         </View>
-        <View style={{flex: 1, marginLeft: 0, marginTop: 10}}>
+        <View style={{marginLeft: 0, marginTop: scale(30)}}>
           <DrawerNavigatorItems {...props} />
         </View>
-        <Text style={styles.build}>Build: {state.buildNum}</Text>
+				<View style={{marginTop: scale(400)}}>
+					<TouchableOpacity 
+						style={{marginBottom: scale(120)}}
+						onPress={() => 
+						{firebase.auth().signOut().then(console.log(firebase.auth().currentUser.uid))}}
+					>
+						<Icon 
+							type='feather'
+							name='log-out'
+							color='#0287D1'
+							size={30}
+						/>
+					</TouchableOpacity>
+        
+        	<Text style={styles.build}>Build: v0.1.12</Text>
+				</View>
       </View>
     </View>
   );
@@ -70,6 +138,13 @@ const SlidePanel = props => {
 
 const MyStackNavigator = createStackNavigator(
   {
+    SignIn : { 
+      screen: SignInScreen,
+      navigationOptions: {
+        header: null,
+        gesturesEnabled: false,
+      }
+    },
     Home : { 
       screen: HomeScreen,
       navigationOptions: {
@@ -86,7 +161,7 @@ const MyStackNavigator = createStackNavigator(
     }
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'SignIn',
     headerMode: 'none'
   }
 );
@@ -94,10 +169,11 @@ const MyStackNavigator = createStackNavigator(
 const MyDrawerNavigator = createDrawerNavigator(
   {
     Home: { screen: MyStackNavigator },
+    /*
     Favorites: { screen: MyStackNavigator },
     Reviews: { screen: MyStackNavigator },
     Setting: { screen: MyStackNavigator },
-    Logout: { screen: MyStackNavigator }
+    Logout: { screen: MyStackNavigator }*/
   },
   {
     initialRouteName: 'Home',
@@ -111,7 +187,7 @@ const MyDrawerNavigator = createDrawerNavigator(
       labelStyle: {
         paddingLeft: scale(15),
       },
-    }
+		},
   }
 );
 
@@ -157,5 +233,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: scale(15),
     textAlign: 'center'
+  },
+  header: {
+    fontSize: 25
   }
 });

@@ -1,6 +1,7 @@
 import React, {Component, PureComponent} from 'react';
 import {StyleSheet, View, Image, Text} from 'react-native';
 import { Icon } from 'react-native-elements';
+import * as firebase from 'firebase';
 
 import {scale} from './scaling'
 import CustomText from './customText'
@@ -12,61 +13,102 @@ class Review extends PureComponent {
         this.state = {
             votes: 0,
             upVoted: false,
-            downVoted: false
+            downVoted: false,
+            userId: '',
+            path: '',
         };
     }
 
     upVote = () => {
+        var votes = this.state.votes;
+        var upVoted = this.state.upVoted;
+        var downVoted = this.state.downVoted;
         if(!this.state.upVoted) {
-            this.state.downVoted === true ? this.setState({ votes: this.state.votes + 2 }) : this.setState({ votes: this.state.votes + 1 });
-            this.setState({ upVoted: true });
-            this.setState({ downVoted: false });
+            this.state.downVoted === true ? votes += 2 : votes += 1;
+            upVoted = true;
+            downVoted = false;
         }
         else{
-            this.setState({ votes: this.state.votes - 1 });
-            this.setState({ upVoted: false });
+            votes -= 1;
+            upVoted = false;
         }
+        
+        this.updateVotes(votes, upVoted, downVoted);
+        this.setState({votes: votes});
+        this.setState({upVoted: upVoted});
+        this.setState({downVoted: downVoted});
     }
 
     downVote = () => {
+        var votes = this.state.votes;
+        var upVoted = this.state.upVoted;
+        var downVoted = this.state.downVoted;
         if(!this.state.downVoted) {
-            this.state.upVoted === true ? this.setState({ votes: this.state.votes - 2 }) : this.setState({ votes: this.state.votes - 1 });
-            this.setState({ downVoted: true });
-            this.setState({ upVoted: false });
+            this.state.upVoted === true ? votes -= 2 : votes -= 1;
+            upVoted = false;
+            downVoted = true;
         }
         else{
-            this.setState({ votes: this.state.votes + 1 });
-            this.setState({ downVoted: false });
+            votes += 1;
+            downVoted = false;
         }
+
+        this.updateVotes(votes, upVoted, downVoted);
+        this.setState({votes: votes});
+        this.setState({upVoted: upVoted});
+        this.setState({downVoted: downVoted});
+    }
+
+    updateVotes = (votes, upVoted, downVoted) => {
+        //console.log(this.state.userId);
+        firebase.database().ref(this.state.path).update({
+            votes: votes,
+        });
+        //console.log(this.state.upVoted);
+        firebase.database().ref(`${this.state.path}/voters/${this.state.userId}/`).set({
+            upVoted: upVoted,
+            downVoted: downVoted,
+        });
+    }
+
+    hasVoted = (path, uid) => {
+        firebase.database().ref(`${path}/`).once('value', snapshot => {
+            //console.log("firsTime func: " + snapshot.hasChild(`voters/${uid}/`));
+            if(!snapshot.hasChild(`voters/${uid}/`)){
+                firebase.database().ref(`${this.state.path}/voters/${uid}/`).set({
+                    upVoted: false,
+                    downVoted: false,
+                });
+            }
+            else{
+                firebase.database().ref(`${path}/voters/${uid}/`).once('value', snapshot => {
+                    this.setState({ upVoted: snapshot.val().upVoted});
+                    this.setState({ downVoted: snapshot.val().downVoted});
+                });
+            }
+        });
     }
 
     componentDidMount(){
-        this.setState({votes: this.props.votes});
-    }
+        //const path = `places/${this.props.placeKey}/dishes/${this.props.dishKey}/reviews/${this.props.reviewKey}/`;
+        const path = this.props.path;
+        //console.log(path);
+        this.setState({ path: path });
+        firebase.database().ref(path).once('value', snapshot => {
+            this.setState({votes: snapshot.val().votes});
+        });
+        var uid = firebase.auth().currentUser.uid;
 
-    setName = (name) => {
-        return name;
-    }
-
-    setImage = (image) => {
-        return image;
-    }
-
-    setRating = (rating) => {
-        return rating;
-    }
-
-    setText = (text) => {
-        return text;
+        this.setState({userId: uid});
+ 
+        this.hasVoted(path, uid);
     }
     
     render() {
-        const name = this.setName(this.props.name);
-        const profileImage = this.setImage(this.props.image);
-        const rating = this.setRating(this.props.rating);
-        const text = this.setText(this.props.text);
-        //const votes = this.setVotes(this.props.votes);
-        //const allProps = Object.assign({}, this.props, { style: style });
+        const name = this.props.name;
+        const profileImage = this.props.image;
+        const rating = this.props.rating;
+        const text = this.props.text;
         return (
             <View style={{flexDirection: 'row', width: scale(390), marginVertical: 10}}>
                 <Image 

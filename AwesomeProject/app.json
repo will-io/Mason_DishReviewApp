@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Mason Dish Review App",
-    "slug": "AwesomeProject",
+    "slug": "mason-dish-review",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
@@ -11,20 +11,38 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ios_app_icon.png",
     "splash": {
       "image": "./assets/splash_page.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "host.exp.exponent",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.1009462507431-kbi6pn012c9gue233a6npdeoikkhujfu"
+        }
+      },
+      "icon": "./assets/ios_app_icon.png"
+    },
+    "android": {
+      "package": "com.gmu.masonfoodapp",
+      "googleServicesFile": "./google-services.json",
+      "icon": "./assets/andriod_app_icon.png",
+      "config": {
+        "googleSignIn": {
+          "apiKey": "AIzaSyCuM7vVxZfFxK1X-5ayu7lIoApdxorv17g",
+          "certificateHash": "EE:2C:06:3C:9B:A0:9C:36:9E:14:A3:D0:4A:2F:C0:E0:32:70:EF:BD"
+        }
+      }
     }
   }
 }
