@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   profileIcon: {
     width: scale(50),
     height: scale(50),
-    borderRadius: 50,
+    borderRadius: scale(25),
   },
   greet: {
     marginLeft: scale(15),

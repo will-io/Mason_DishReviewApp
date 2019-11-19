@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     marginLeft: scale(24),
     marginTop: scale(15),
     marginRight: scale(10),
-    borderRadius: 50
+    borderRadius: scale(26)
   },
   profileText: {
     flex: 1,

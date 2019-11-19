@@ -112,7 +112,7 @@ class Review extends PureComponent {
         return (
             <View style={{flexDirection: 'row', width: scale(390), marginVertical: 10}}>
                 <Image 
-                    style={{width: scale(40), height: scale(40), marginHorizontal: 12, borderRadius: 50}}
+                    style={{width: scale(40), height: scale(40), marginHorizontal: 12, borderRadius: scale(20)}}
                     source={{uri: profileImage}}
                 />
                 <View style={{width: scale(310), flexDirection: 'column', backgroundColor: 'white', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 15}}>
