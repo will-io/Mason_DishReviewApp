@@ -1,11 +1,11 @@
 import React, {Component, PureComponent} from 'react';
-import {StyleSheet, View, Image, Text} from 'react-native';
+import {StyleSheet, View, Image, Text, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
 import { Icon } from 'react-native-elements';
 import * as firebase from 'firebase';
 
 import {scale} from './scaling'
 import CustomText from './customText'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+//import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class Review extends PureComponent {
     constructor(props){
@@ -20,6 +20,7 @@ class Review extends PureComponent {
     }
 
     upVote = () => {
+        
         var votes = this.state.votes;
         var upVoted = this.state.upVoted;
         var downVoted = this.state.downVoted;
@@ -40,6 +41,7 @@ class Review extends PureComponent {
     }
 
     downVote = () => {
+        console.log("hello");
         var votes = this.state.votes;
         var upVoted = this.state.upVoted;
         var downVoted = this.state.downVoted;
@@ -93,6 +95,7 @@ class Review extends PureComponent {
         //const path = `places/${this.props.placeKey}/dishes/${this.props.dishKey}/reviews/${this.props.reviewKey}/`;
         const path = this.props.path;
         //console.log(path);
+      
         this.setState({ path: path });
         firebase.database().ref(path).once('value', snapshot => {
             this.setState({votes: snapshot.val().votes});
@@ -110,12 +113,12 @@ class Review extends PureComponent {
         const rating = this.props.rating;
         const text = this.props.text;
         return (
-            <View style={{flexDirection: 'row', width: scale(390), marginVertical: 10}}>
+            <View style={{flexDirection: 'row', width: scale(390), marginVertical: scale(10)}}>
                 <Image 
                     style={{width: scale(40), height: scale(40), marginHorizontal: 12, borderRadius: scale(20)}}
                     source={{uri: profileImage}}
                 />
-                <View style={{width: scale(310), flexDirection: 'column', backgroundColor: 'white', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderTopRightRadius: 15}}>
+                <View style={{width: scale(310), flexDirection: 'column', backgroundColor: 'white', borderBottomLeftRadius: 15, borderBottomRightRadius: scale(21), borderTopRightRadius: scale(21)}}>
                     <View style={{flexDirection: 'row', marginHorizontal: 12, marginTop: 5, marginBottom: 10, justifyContent:'space-between'}}>
                         <Text style={{fontSize: scale(14), fontWeight: 'bold'}}>{name}</Text>
                         <View style={styles.rate}>
@@ -128,27 +131,25 @@ class Review extends PureComponent {
                     </View>
                     <Text style={{marginHorizontal: 12, marginBottom: 12, fontSize: scale(14)}}>{text}</Text>
                 </View>
-                <View style={{flexDirection: 'column', width: scale(25), marginLeft: 5}}>
-                    <View style={{position: 'absolute', top: 0, left: 0, right: 0, marginTop: 5}}>
-                        <TouchableOpacity onPress={() => this.upVote()}>
-                            <Icon 
-                                type='font-awesome'
-                                name='chevron-up'
-                                color={this.state.upVoted === true ? 'blue' : 'black'}
-                                size={20}
-                            />
-                        </TouchableOpacity>
-                    </View>
+                <View style={{flexDirection: 'column', width: scale(25), marginLeft: scale(5)}}>
+                    <TouchableOpacity onPress={() => this.upVote()} style={{zIndex: 99}}>
+                        <Icon 
+                            type='font-awesome'
+                            name='chevron-up'
+                            color={this.state.upVoted === true ? 'blue' : 'black'}
+                            size={22}
+                        />
+                    </TouchableOpacity>
                     <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
                         <Text>{this.state.votes}</Text>
                     </View>
-                    <View style={{position: 'absolute', bottom: 0, left: 0, right: 0, marginBottom: 5}}>
+                    <View style={{position: 'absolute', bottom: 0, left: 0, right: 0, justifyContent: 'center'}}>
                         <TouchableOpacity onPress={() => this.downVote()}>
                             <Icon 
                                 type='font-awesome'
                                 name='chevron-down'
                                 color={this.state.downVoted === true ? 'blue' : 'black'}
-                                size={20}
+                                size={22}
                             />
                         </TouchableOpacity>
                     </View>

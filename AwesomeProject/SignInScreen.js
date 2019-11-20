@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, Button, TouchableOpacity, Image } from 'react-native';
-
+ 
 import * as Google from 'expo-google-app-auth';
 import * as firebase from 'firebase';
-
+ 
 import {scale} from './components/scaling'
 import CustomText from './components/customText'
 import StatusOSBar from './components/statusBar'
-
-
-
+ 
+ 
+ 
 class SignInScreen extends Component {
     constructor(props){
         super(props);
@@ -23,7 +23,7 @@ class SignInScreen extends Component {
             photoUrl: ""
         }
     }
-
+ 
     componentDidMount = () => {
         firebase.auth().onAuthStateChanged(
           function(user) {
@@ -38,7 +38,7 @@ class SignInScreen extends Component {
           }.bind(this)
         );
     }
-
+ 
     isUserEqual = (googleUser, firebaseUser) => {
         if (firebaseUser) {
           var providerData = firebaseUser.providerData;
@@ -55,7 +55,7 @@ class SignInScreen extends Component {
         }
         return false;
     };
-
+ 
     onSignIn = (googleUser) => {
     //console.log('Google Auth Response', googleUser);
     // We need to register an Observer on Firebase Auth to make sure auth is initialized.
@@ -108,7 +108,7 @@ class SignInScreen extends Component {
         }.bind(this)
     );
     };
-    
+ 
     signIn = async () => {
     try {
         //old has for andriod key
@@ -117,14 +117,13 @@ class SignInScreen extends Component {
         //com.googleusercontent.apps.1009462507431-3russs08sidpkatlctqk99i1ee0eluo4
         const result = await Google.logInAsync({
         behavoir: 'web',
-        offlineAccess: true,
-        androidClientId: "1009462507431-khpn1hiufi0e2ha34p2hc7u2goflgr8d.apps.googleusercontent.com",
-        androidStandaloneAppClientId: "1009462507431-khpn1hiufi0e2ha34p2hc7u2goflgr8d.apps.googleusercontent.com",
-        iosClientId: "1009462507431-kbi6pn012c9gue233a6npdeoikkhujfu.apps.googleusercontent.com",
-        iosStandaloneAppClientId: "1009462507431-kbi6pn012c9gue233a6npdeoikkhujfu.apps.googleusercontent.com",
+        androidClientId: "1009462507431-rq9ppvds7745kdrdqckqds0fouqtmnq1.apps.googleusercontent.com",
+        //androidStandaloneAppClientId: "1009462507431-khpn1hiufi0e2ha34p2hc7u2goflgr8d.apps.googleusercontent.com",
+        iosClientId: "1009462507431-qssc6v6c5i100n15uehic8e4ie9jj641.apps.googleusercontent.com",
+        //iosStandaloneAppClientId: "1009462507431-kbi6pn012c9gue233a6npdeoikkhujfu.apps.googleusercontent.com",
         scopes: ["profile", "email"]
         })
-
+ 
         if (result.type === "success") {
         this.setState({
             signedIn: true,
@@ -141,7 +140,7 @@ class SignInScreen extends Component {
         console.log("error", e)
     }
     }
-
+ 
     render(){
         if (this.state.loading) return null; // Render loading/splash screen etc
         else{
@@ -157,7 +156,7 @@ class SignInScreen extends Component {
                             style={{width: scale(180), height: scale(180), aspectRatio: 1/1, position: 'absolute', top: scale(120)}}
                             source={require('./assets/app_logo.png')}
                         />
-
+ 
                         <TouchableOpacity style={styles.googleButton} activeOpacity={0.8} onPress={() => this.signIn()}>
                             <View style={{height: scale(47), aspectRatio: 1/1, marginLeft: scale(0.5), borderRadius: 2, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white'}}>
                                 <Image 
@@ -171,14 +170,14 @@ class SignInScreen extends Component {
                         </TouchableOpacity>
                     </View> 
                 </View>
-
+ 
             )
         }   
     }
 }
-
+ 
 export default SignInScreen;
-
+ 
 const styles = StyleSheet.create({
     googleButton: {
         flexDirection: 'row',
