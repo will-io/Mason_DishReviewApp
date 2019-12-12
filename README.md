@@ -10,11 +10,11 @@ A React Native Application for both IOS and Android to review dishes at local ea
 
 
 
-![](example/home.png)
+![](Example/home.png)
 
 
 
-![](example/gsignin.png)
+![](Example/gsignin.png)
 
 
-![](example/review.png)
+![](Example/review.png)
